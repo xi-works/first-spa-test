@@ -1,4 +1,4 @@
-# my-project
+# first-spa-test
 
 ## Project setup
 ```
