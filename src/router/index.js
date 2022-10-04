@@ -10,6 +10,7 @@ export default new Router({
     routes: [{
         path: '/concentrate',
         name: 'concentrate',
-        component: Concentrate
+        component: Concentrate,
+        props: {cardNum: 6},
     }]
 })
