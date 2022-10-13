@@ -2,8 +2,8 @@
   <div class="concentrate">
     <h1>Concentrate</h1>
     <div class="columns is-multiline">
-      <label v-for="(v, i) in randArr" :key="v" class="column card" :class="'card'+v">
-        <input type="checkbox" :id="'card-'+i" :value="v" :v-model="openCards" @click="checkCards" />
+      <label v-for="(v, i) in randArr" :key="i" class="column is-one-quarter card" :class="'card'+v">
+        <input type="checkbox" :id="'card-'+i" :value="i+'-'+v" v-model="openCards" />
         <span class="card-bg"></span>
       </label>
     </div>
@@ -35,14 +35,18 @@ export default {
       }
       return array;
     },
-    checkCards() { //TODO
-      if (this.openCards.length == 2) {
-        if (this.openCards[0] == this.openCards[1]) {
-          let idList = window.$('input:checked').attr('id').get().map(id => id.split('-')[1])
-          for (let id of idList) {
-            this.randArr.splice(id, 1)
+  },
+  watch: {
+    openCards(openCards) {
+      if (openCards.length == 2) {
+        let that = this
+        let cardIds = openCards.map(v => v.split('-')[1])
+        setTimeout(function() {
+          if (cardIds[0] == cardIds[1]) {
+            that.randArr = that.randArr.filter(v => v != cardIds[0])
           }
-        }
+          that.openCards = []
+        }, 1000)
       }
     },
   }
@@ -51,8 +55,8 @@ export default {
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
 <style scoped>
-h3 {
-  margin: 40px 0 0;
+h1 {
+  margin: 40px 0;
 }
 ul {
   list-style-type: none;
@@ -60,7 +64,7 @@ ul {
 }
 li {
   display: inline-block;
-  margin: 0 10px;
+  margin: 0;
 }
 a {
   color: #42b983;
