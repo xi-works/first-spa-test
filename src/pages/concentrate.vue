@@ -1,11 +1,22 @@
 <template>
-  <div class="concentrate">
-    <h1>Concentrate</h1>
+  <div class="container">
+    <h1 class="title">Concentrate</h1>
+    <div class="columns">
+      <div class="column is-4"></div>
+      <div class="column is-4 has-text-centered"><span>{{stopWatch}}</span></div>
+      <div class="column is-4 has-text-right"><button class="button is-rounded is-success is-medium" @click="reset">Reset</button></div>
+    </div>
     <div class="columns is-multiline">
-      <label v-for="(v, i) in randArr" :key="i" class="column is-one-quarter card" :class="'card'+v">
-        <input type="checkbox" :id="'card-'+i" :value="i+'-'+v" v-model="openCards" />
-        <span class="card-bg"></span>
-      </label>
+      <div v-for="(v, i) in randArr" :key="i" class="column is-one-quarter">
+        <div class="card">
+          <div class="card-content">
+            <label :class="'card'+v">
+              <input type="checkbox" :id="'card-'+i" :value="i+'-'+v" v-model="openCards" @click="timerOn" />
+              <span class="card-bg"></span>
+            </label>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -17,12 +28,14 @@ export default {
     cardNum: Number,
   },
   created() {
-    this.randArr = this.createArray()
+    this.reset()
   },
   data() {
     return {
       randArr: [],
       openCards: [],
+      elapsedTime: 0,
+      timerId: null,
     }
   },
   methods: {
@@ -35,6 +48,33 @@ export default {
       }
       return array;
     },
+    reset() {
+      this.timerOff()
+      this.elapsedTime = 0
+      this.randArr = this.createArray()
+    },
+    timerOn() {
+      if (this.timerId == null) {
+        this.timerId = setInterval(() => {this.elapsedTime++}, 1000)
+      }
+    },
+    timerOff() {
+      clearInterval(this.timerId)
+      this.timerId = null
+    },
+  },
+  computed: {
+    stopWatch() {
+      const t = this.elapsedTime
+      const h = Math.floor(t / 3600)
+      const m = Math.floor((t - h * 3600) / 60)
+      const s = t - h * 3600 - m * 60
+      const padding = (d) => {
+        const dStr = '0' + d
+        return (dStr.length > 3) ? dStr.substring(1) : dStr.substring(dStr.length - 2)
+      }
+      return padding(h) + ':' + padding(m) + ':' + padding(s)
+    }
   },
   watch: {
     openCards(openCards) {
@@ -49,6 +89,11 @@ export default {
         }, 1000)
       }
     },
+    randArr(randArr) {
+      if (randArr.length == 0) {
+        this.timerOff()
+      }
+    }
   }
 }
 </script>
@@ -58,23 +103,12 @@ export default {
 h1 {
   margin: 40px 0;
 }
-ul {
-  list-style-type: none;
-  padding: 0;
-}
-li {
-  display: inline-block;
-  margin: 0;
-}
-a {
-  color: #42b983;
-}
 
 input[type=checkbox] {
   display: none; /* チェックボックスを非表示にする */
 }
 
-.card input + .card-bg:before {
+input + .card-bg:before {
   content: "";
   display: inline-block;
   position: relative;
