@@ -1,17 +1,17 @@
 <template>
   <div class="container">
-    <h1 class="title">Concentrate</h1>
+    <h1 class="title">Concentration</h1>
     <div class="columns">
       <div class="column is-4"></div>
       <div class="column is-4 has-text-centered"><span>{{stopWatch}}</span></div>
       <div class="column is-4 has-text-right"><button class="button is-rounded is-success is-medium" @click="reset">Reset</button></div>
     </div>
     <div class="columns is-multiline">
-      <div v-for="(v, i) in randArr" :key="i" class="column is-one-quarter">
+      <div v-for="(card, i) in randArr" :key="i" class="column is-one-quarter">
         <div class="card">
           <div class="card-content">
-            <label :class="'card'+v">
-              <input type="checkbox" :id="'card-'+i" :value="i+'-'+v" v-model="openCards" @click="timerOn" />
+            <label :class="'card'+card.value">
+              <input type="checkbox" :id="'card-'+i" :value="i+'-'+card.value" v-model="openCards" :disabled="card.isDisabled" @click="timerOn" />
               <span class="card-bg"></span>
             </label>
           </div>
@@ -23,7 +23,7 @@
 
 <script>
 export default {
-  name: 'ConcentrateApp',
+  name: 'ConcentrationApp',
   props: {
     cardNum: Number,
   },
@@ -32,7 +32,7 @@ export default {
   },
   data() {
     return {
-      randArr: [],
+      randArr: {},
       openCards: [],
       elapsedTime: 0,
       timerId: null,
@@ -51,7 +51,7 @@ export default {
     reset() {
       this.timerOff()
       this.elapsedTime = 0
-      this.randArr = this.createArray()
+      this.randArr = this.createArray().map((v) => { return {value: v, isDisabled: false} })
     },
     timerOn() {
       if (this.timerId == null) {
@@ -83,14 +83,19 @@ export default {
         let cardIds = openCards.map(v => v.split('-')[1])
         setTimeout(function() {
           if (cardIds[0] == cardIds[1]) {
-            that.randArr = that.randArr.filter(v => v != cardIds[0])
+            that.randArr = that.randArr.map(card => {
+              return {
+                value: card.value,
+                isDisabled: card.isDisabled || card.value == cardIds[0]
+              }
+            })
           }
           that.openCards = []
         }, 1000)
       }
     },
     randArr(randArr) {
-      if (randArr.length == 0) {
+      if (!randArr.some((card) => !card.isDisabled)) {
         this.timerOff()
       }
     }
@@ -139,5 +144,9 @@ input + .card-bg:before {
 }
 .card5 input:checked + .card-bg:before {
   background-image: url("../assets/6111fcf9.png");
+}
+
+.card input:disabled + .card-bg:before {
+  background-image: none;
 }
 </style>

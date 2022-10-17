@@ -3,8 +3,8 @@
     
     <div id="navbarBasicExample" class="navbar-menu">
       <div class="navbar-start">
-        <RouterLink class="navbar-item" to="/concentrate">
-          Concentrate
+        <RouterLink class="navbar-item" to="/concentration">
+          Concentration
         </RouterLink>
           <RouterLink class="navbar-item" to="/about">
           About
